@@ -1,0 +1,7 @@
+routes:
+  openai_layout_converter.result:
+    path: /admin/content/openai-layout-converter/result
+    defaults:
+      _controller: '\Drupal\openai_layout_converter\Controller\ResultController::display'
+    requirements:
+      _permission: 'use openai layout converter'
