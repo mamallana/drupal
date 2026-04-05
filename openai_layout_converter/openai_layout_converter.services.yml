@@ -9,6 +9,15 @@ services:
   
   openai_layout_converter.template_generator:
     class: Drupal\openai_layout_converter\Service\LayoutTemplateGenerator
+    arguments:
+      - '@entity_type.manager'
+  
+  openai_layout_converter.converter:
+    class: Drupal\openai_layout_converter\Service\ImageConverterService
+    arguments:
+      - '@openai_layout_converter.image_analyzer'
+      - '@openai_layout_converter.template_generator'
+      - '@logger.channel.openai_layout_converter'
 
   logger.channel.openai_layout_converter:
     parent: logger.channel_base
