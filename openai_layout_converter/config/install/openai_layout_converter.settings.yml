@@ -1,0 +1,14 @@
+# config/install/openai_layout_converter.settings.yml
+openai_api_key: ''
+openai_model: 'gpt-4o'
+max_tokens: 2000
+css_generation:
+  generate_css: true
+  include_responsive: true
+  css_prefix: 'layout-conv'
+layout_settings:
+  default_layout_type: 'layout_onecol'
+  auto_save_templates: false
+advanced:
+  enable_logging: true
+  cache_responses: true
