@@ -1,8 +1,9 @@
 name: 'OpenAI Layout Converter'
 type: module
-description: 'A module to convert layouts using OpenAI.'
-core_version_requirement: ^9 || ^10
-package: Custom
+description: 'Converts images to Layout Builder templates using OpenAI vision capabilities'
+package: 'AI & Automation'
+core_version_requirement: '^9 || ^10'
 dependencies:
-  - drupal:serialization
-  - drupal:rest
+  - drupal:layout_builder
+  - drupal:file
+  - drupal:media
