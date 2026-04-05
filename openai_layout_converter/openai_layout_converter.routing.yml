@@ -1,0 +1,25 @@
+# openai_layout_converter.routing.yml
+openai_layout_converter.admin_settings:
+  path: '/admin/config/content/openai-layout-converter'
+  defaults:
+    _form: '\Drupal\openai_layout_converter\Form\SettingsForm'
+    _title: 'OpenAI Layout Converter Settings'
+  requirements:
+    _permission: 'administer openai layout converter'
+
+openai_layout_converter.converter_page:
+  path: '/admin/content/openai-layout-converter'
+  defaults:
+    _form: '\Drupal\openai_layout_converter\Form\ImageConverterForm'
+    _title: 'Convert Image to Layout'
+  requirements:
+    _permission: 'use openai layout converter'
+
+openai_layout_converter.convert_api:
+  path: '/api/openai-layout-converter/convert/{file_id}'
+  defaults:
+    _controller: '\Drupal\openai_layout_converter\Controller\ImageConverterController::convertImage'
+  requirements:
+    _permission: 'use openai layout converter'
+    file_id: '\d+'
+    _method: 'POST'
