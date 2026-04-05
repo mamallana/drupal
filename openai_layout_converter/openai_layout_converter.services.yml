@@ -1,0 +1,15 @@
+# openai_layout_converter.services.yml
+services:
+  openai_layout_converter.image_analyzer:
+    class: Drupal\openai_layout_converter\Service\OpenAiImageAnalyzer
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.channel.openai_layout_converter'
+  
+  openai_layout_converter.template_generator:
+    class: Drupal\openai_layout_converter\Service\LayoutTemplateGenerator
+
+  logger.channel.openai_layout_converter:
+    parent: logger.channel_base
+    arguments: ['openai_layout_converter']
