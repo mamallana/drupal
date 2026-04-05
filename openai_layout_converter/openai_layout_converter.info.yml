@@ -2,8 +2,9 @@ name: 'OpenAI Layout Converter'
 type: module
 description: 'Converts images to Layout Builder templates using OpenAI vision capabilities'
 package: 'AI & Automation'
-core_version_requirement: '^9 || ^10'
+core_version_requirement: '^9 || ^10 || ^11'
 dependencies:
   - drupal:layout_builder
   - drupal:file
   - drupal:media
+  - drupal:system
