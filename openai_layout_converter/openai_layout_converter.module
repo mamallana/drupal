@@ -1,0 +1,45 @@
+// openai_layout_converter.module
+<?php
+
+/**
+ * @file
+ * OpenAI Layout Converter module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function openai_layout_converter_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.openai_layout_converter':
+      return t('
+        <p>OpenAI Layout Converter uses OpenAI vision capabilities to analyze images and convert them into Drupal Layout Builder templates.</p>
+        <p><strong>Setup:</strong></p>
+        <ol>
+          <li>Install and enable this module</li>
+          <li>Go to <a href="/admin/config/content/openai-layout-converter">Configuration</a></li>
+          <li>Enter your OpenAI API key</li>
+          <li>Visit <a href="/admin/content/openai-layout-converter">Image Converter</a> to start converting images</li>
+        </ol>
+      ');
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function openai_layout_converter_permission() {
+  return [
+    'use openai layout converter' => [
+      'title' => t('Use OpenAI Layout Converter'),
+      'description' => t('Access the image to layout converter tool.'),
+    ],
+    'administer openai layout converter' => [
+      'title' => t('Administer OpenAI Layout Converter'),
+      'description' => t('Configure OpenAI Layout Converter settings.'),
+      'restrict access' => TRUE,
+    ],
+  ];
+}
