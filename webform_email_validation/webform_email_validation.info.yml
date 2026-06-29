@@ -1,0 +1,6 @@
+name: Webform Email Validation
+description: Adds custom validation for unique email ID in remind_me webform submissions
+type: module
+core_version_requirement: ^9 || ^10
+dependencies:
+  - webform
