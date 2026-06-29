@@ -66,7 +66,7 @@ class EmailValidationHandler extends WebformHandlerBase {
 
     // Query to check existing submissions for this email + nid combination
     $query = $database->select('webform_submission_data', 'wsd')
-      ->fields('wsd', ['webform_submission_id'])
+      ->fields('wsd', ['sid'])
       ->condition('wsd.name', 'email')
       ->condition('wsd.value', $email, '=');
 
@@ -74,7 +74,7 @@ class EmailValidationHandler extends WebformHandlerBase {
     $query->innerJoin(
       'webform_submission',
       'ws',
-      'wsd.webform_submission_id = ws.sid'
+      'wsd.sid = ws.sid'
     );
     $query->condition('ws.webform_id', 'remind_me');
 
@@ -82,7 +82,7 @@ class EmailValidationHandler extends WebformHandlerBase {
     $query->innerJoin(
       'webform_submission_data',
       'wsd_nid',
-      'ws.sid = wsd_nid.webform_submission_id AND wsd_nid.name = :nid_field',
+      'ws.sid = wsd_nid.sid AND wsd_nid.name = :nid_field',
       [':nid_field' => 'nid']
     );
     $query->condition('wsd_nid.value', $nid, '=');
@@ -92,7 +92,7 @@ class EmailValidationHandler extends WebformHandlerBase {
       $query->innerJoin(
         'webform_submission_data',
         'wsd_campaign',
-        'ws.sid = wsd_campaign.webform_submission_id AND wsd_campaign.name = :campaign_field',
+        'ws.sid = wsd_campaign.sid AND wsd_campaign.name = :campaign_field',
         [':campaign_field' => 'campaign_id']
       );
       $query->condition('wsd_campaign.value', $campaign_id, '=');
