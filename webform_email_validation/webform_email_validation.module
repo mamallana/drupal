@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * @file
+ * Webform Email Validation module.
+ *
+ * Validates unique email IDs in remind_me webform submissions
+ * based on node ID (nid) and campaign ID.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_webform_submission_form_alter().
+ */
+function webform_email_validation_webform_submission_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  // Check if this is the remind_me webform
+  if ($form_state->getFormObject()->getEntity()->getWebform()->id() === 'remind_me') {
+    // Add custom validation handler
+    $form['#validate'][] = 'webform_email_validation_custom_validator';
+  }
+}
+
+/**
+ * Custom validation handler for remind_me webform.
+ *
+ * Validates that email is unique per node ID (nid).
+ * Same email can be used for different node IDs.
+ *
+ * @param array $form
+ *   The form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state object.
+ */
+function webform_email_validation_custom_validator(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+
+  // Get the email, nid, and campaign_id from form submission
+  $email = isset($values['email']) ? trim($values['email']) : '';
+  $nid = isset($values['nid']) ? $values['nid'] : '';
+  $campaign_id = isset($values['campaign_id']) ? $values['campaign_id'] : '';
+
+  // Validate only if all required fields are present
+  if (!empty($email) && !empty($nid)) {
+    // Check if email already exists for this specific nid
+    if (_webform_email_validation_email_exists_for_nid($email, $nid, $campaign_id)) {
+      $form_state->setErrorByName('email', t(
+        'This email address has already been used for this reminder. Please use a different email address or contact support.'
+      ));
+    }
+  }
+}
+
+/**
+ * Check if email exists for a specific node ID.
+ *
+ * Queries the webform_submission and webform_submission_data tables
+ * to check if the email has been used for the same nid before.
+ *
+ * @param string $email
+ *   The email address to check.
+ * @param string $nid
+ *   The node ID to check against.
+ * @param string $campaign_id
+ *   The campaign ID (optional).
+ *
+ * @return bool
+ *   TRUE if email exists for this nid, FALSE otherwise.
+ */
+function _webform_email_validation_email_exists_for_nid($email, $nid, $campaign_id = '') {
+  $database = \Drupal::database();
+
+  // Build the query to check for existing submissions
+  $query = $database->select('webform_submission_data', 'wsd')
+    ->fields('wsd', ['webform_submission_id'])
+    ->condition('wsd.name', 'email')
+    ->condition('wsd.value', $email, '=');
+
+  // Join with webform_submission to filter by webform type and entity reference
+  $query->innerJoin(
+    'webform_submission',
+    'ws',
+    'wsd.webform_submission_id = ws.sid'
+  );
+  $query->condition('ws.webform_id', 'remind_me');
+  $query->condition('ws.entity_type', 'node');
+
+  // Filter by node ID
+  $query->innerJoin(
+    'webform_submission_data',
+    'wsd_nid',
+    'ws.sid = wsd_nid.webform_submission_id AND wsd_nid.name = :nid_field',
+    [':nid_field' => 'nid']
+  );
+  $query->condition('wsd_nid.value', $nid, '=');
+
+  // If campaign_id is provided, also check against it
+  if (!empty($campaign_id)) {
+    $query->innerJoin(
+      'webform_submission_data',
+      'wsd_campaign',
+      'ws.sid = wsd_campaign.webform_submission_id AND wsd_campaign.name = :campaign_field',
+      [':campaign_field' => 'campaign_id']
+    );
+    $query->condition('wsd_campaign.value', $campaign_id, '=');
+  }
+
+  $result = $query->execute()->fetchField();
+
+  return !empty($result);
+}
